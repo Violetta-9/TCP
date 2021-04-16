@@ -20,16 +20,28 @@ namespace TCP
 
             tcpSocket.Bind(tcpEndPoint);
             tcpSocket.Listen(2);
-
-            var listener=tcpSocket.Accept();
-            var buffer = new byte[256];
-            var size = 0;
-            var data = new StringBuilder();
-            do
+            while (true)
             {
+                var listener = tcpSocket.Accept();
+                var buffer = new byte[256];
+                var size = 0;
+                var data = new StringBuilder();
+                do
+                {
+                    size=listener.Receive(buffer);
+                    data.Append(Encoding.UTF8.GetString(buffer,0, size - 1));
+                  
 
+                }
+                while (listener.Available > 0);
+                
+                Console.WriteLine(size);
+                Console.WriteLine(data);
+                listener.Send(Encoding.UTF8.GetBytes("luck"));
+                listener.Shutdown(SocketShutdown.Both);
+                listener.Close();// можно ли listener поменять на tcpSocket
+               
             }
-            while (listener.Available > 0);
 
 
         }
